@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Webapp</title>
+    <style>
+        .head {
+            height: 150px;
+            background-color: #008080;
+            width: 103%;
+            font-size: 30px;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0px;
+            border-radius: 10px;
+            color: white;
+        }
+        form {
+            text-align: center;
+        }
+        input {
+            margin-top: 40px;
+            padding: 20px 80px;
+            border: none;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 15px;
+            border-radius: 10px;
+            font-size: 20px;
+            color: black;
+            background-color: pink;
+        }
+        button {
+            margin-top: 40px;
+            padding: 20px 50px;
+            border: none;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 15px;
+            border-radius: 10px;
+            font-size: 20px;
+            background-color: palevioletred;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #d94e76;
+        }
+        body {
+            width: 97vw;
+            background-image: url(cc47f3e36a.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0px;
+        }
+        .result {
+            background-color: rgba(255, 255, 255, 0.8);
+            margin: 30px auto;
+            padding: 20px;
+            width: 80%;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 15px;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+        }
+        .result h2 {
+            color: #008080;
+        }
+        .result p {
+            font-size: 18px;
+            color: #333;
+        }
+        .result h3 {
+            color: palevioletred;
+        }
+        footer p {
+            background-color: antiquewhite;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 200px;
+        }
+        footer{
+            width: 103%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="head">
+            <h1>Dictionary Webapp</h1>
+        </div>
+    </header>
+
+    <main>
+        <form>
+            <input type="text" placeholder="Enter Your Word" name="d">
+            <button type="submit" name="r">Search</button>
+        </form>
+
+        <div class="result">
+            <!-- API response will be displayed here -->
+        </div>
+    </main>
+
+    <footer>
+        <p>Copyright: &copy; 2025 Aditya Hote. All rights reserved.</p>
+    </footer>
+
+    <script>
+        
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const input = document.querySelector("input[name='d']");
+    const resultDiv = document.querySelector(".result");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault(); // Prevent page reload on form submission
+
+        const word = input.value.trim();
+
+        if (!word) {
+            resultDiv.innerHTML = "<p style='color: red;'>Please enter a word!</p>";
+            return;
+        }
+
+        resultDiv.innerHTML = "<p>Loading...</p>";
+
+        try {
+            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+            
+            if (!response.ok) {
+                throw new Error("Word not found");
+            }
+
+            const data = await response.json();
+            displayResult(data);
+        } catch (error) {
+            resultDiv.innerHTML = `<p style='color: red;'>${error.message}</p>`;
+        }
+    });
+
+    function displayResult(data) {
+        const word = data[0].word;
+        const meaning = data[0].meanings[0];
+        const partOfSpeech = meaning.partOfSpeech;
+        const definition = meaning.definitions[0]?.definition || "Definition not available";
+        const example = meaning.definitions[0]?.example || "Example not available";
+        const synonyms = meaning.definitions[0]?.synonyms?.join(", ") || "No synonyms available";
+        const antonyms = meaning.definitions[0]?.antonyms?.join(", ") || "No antonyms available";
+
+        resultDiv.innerHTML = `
+            <h2>Word: ${word}</h2>
+            <p><strong>Part of Speech:</strong> ${partOfSpeech}</p>
+            <p><strong>Definition:</strong> ${definition}</p>
+            <p><strong>Example:</strong> ${example}</p>
+            <p><strong>Synonyms:</strong> ${synonyms}</p>
+            <p><strong>Antonyms:</strong> ${antonyms}</p>
+        `;
+    }
+});
+
+    </script>
+</body>
+</html>
